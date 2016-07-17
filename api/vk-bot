@@ -1,5 +1,3 @@
-var moment = require('moment');
-var cheerio = require('cheerio');
 var fetch = require('node-fetch');
 var vkRequest = require('../api/vk-request');
 
@@ -65,9 +63,7 @@ vkBot.prototype.run = function _run(_ts) {
                    };
                 }
 
-                if (textMsg.match(/^время/)) {
-                    VK.request('messages.send', {'user_id': fromId, 'message': moment().toString()})
-                }
+               
                 ///////////////////////
             }
             _run(body.ts);
