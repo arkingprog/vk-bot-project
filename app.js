@@ -13,10 +13,10 @@ var bot = new vkBot({
     access_token: 'ee063506bcc4ff0215fd98ab69a7e9928638d0b48419484f5bbf8683affd8d60fc8b9e914403807cc4297',
     app_id: '5546514'
 });
-bot.addRules('bash',rulesBash);
-bot.addRules('привет',rulesHello);
-bot.addRules('time',rulesTime);
-bot.run();
+bot.addRules('bash', rulesBash)
+    .addRules('привет', rulesHello)
+    .addRules('time', rulesTime)
+    .run();
 
 
 var routes = require('./routes/index');

@@ -8,7 +8,6 @@ var vkServer = null;
 
 var rulesMap = new Map();
 var vkBot = function (param) {
-    // this.rulesMap = new Map();
     this.access_token = param.access_token;
     VK = new vkRequest({
         access_token: param.access_token,
@@ -19,11 +18,14 @@ var vkBot = function (param) {
 
 
 vkBot.prototype.addRules = function () {
+    if (arguments.length == 1)
+        console.log('array');
     if (arguments.length == 2) {
         var textMatch = arguments[0];
         var func = arguments[1];
         rulesMap.set(textMatch, func);
     }
+    return this;
 };
 
 
@@ -44,26 +46,21 @@ vkBot.prototype.run = function _run(_ts) {
     })
         .then(function (body) {
             if (body.updates.length == 0) {
-                console.log(body);
                 _run(body.ts);
                 return;
             }
             let mas = body.updates[0];
             let textMsg, fromId;
             if (mas[0] == 4) {
-
                 textMsg = mas[6];
                 fromId = mas[3];
-
                 /////Обработка команд
                 ////////////////////////
                 for (var [key, func] of rulesMap) {
-                   if(textMsg.match(new RegExp(key))){
-                        func({textMsg:textMsg,fromId:fromId},VK);
-                   };
+                    if (textMsg.match(new RegExp('^' + key))) {
+                        func({textMsg: textMsg, fromId: fromId}, VK);
+                    }
                 }
-
-               
                 ///////////////////////
             }
             _run(body.ts);
