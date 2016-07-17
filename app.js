@@ -5,13 +5,20 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var vkBot = require('./api/vk-bot');
-
- var bot=new vkBot({
-     access_token: 'ee063506bcc4ff0215fd98ab69a7e9928638d0b48419484f5bbf8683affd8d60fc8b9e914403807cc4297',
-     app_id: '5546514'
- });
- bot.run();
-
+var rulesBash = require('./api/rules/bash');
+var rulesHello = require('./api/rules/hello');
+var vkRequest = require('./api/vk-request');
+VK = new vkRequest({
+    access_token: 'ee063506bcc4ff0215fd98ab69a7e9928638d0b48419484f5bbf8683affd8d60fc8b9e914403807cc4297',
+    app_id: '5546514'
+})
+var bot = new vkBot({
+    access_token: 'ee063506bcc4ff0215fd98ab69a7e9928638d0b48419484f5bbf8683affd8d60fc8b9e914403807cc4297',
+    app_id: '5546514'
+});
+bot.addRules('bash',rulesBash);
+bot.addRules('привет',rulesHello);
+bot.run();
 
 
 var routes = require('./routes/index');
@@ -54,8 +61,6 @@ if (app.get('env') === 'development') {
         });
     });
 }
-
-
 
 
 // production error handler

@@ -4,28 +4,34 @@ var fetch = require('node-fetch');
 var vkRequest = require('../api/vk-request');
 
 var VK;
-var access_token = 'ee063506bcc4ff0215fd98ab69a7e9928638d0b48419484f5bbf8683affd8d60fc8b9e914403807cc4297';
-var app_id = '5546514';
 var key = null;
 var ts = null;
 var vkServer = null;
-let helloMas = ['Здравствуйте!', 'Привет!', 'Доброе утро!', 'Добрый день!', 'Добрый вечер!', 'Салют!', 'Здорово!'];
-function randomInteger(min, max) {
-    var rand = min - 0.5 + Math.random() * (max - min + 1)
-    rand = Math.round(rand);
-    return rand;
-}
 
+var rulesMap = new Map();
 var vkBot = function (param) {
+    // this.rulesMap = new Map();
+    this.access_token = param.access_token;
     VK = new vkRequest({
         access_token: param.access_token,
         app_id: param.app_id
     })
 };
 ;
+
+
+vkBot.prototype.addRules = function () {
+    if (arguments.length == 2) {
+        var textMatch = arguments[0];
+        var func = arguments[1];
+        rulesMap.set(textMatch, func);
+    }
+};
+
+
 vkBot.prototype.run = function _run(_ts) {
     if (!key || !ts) {
-        fetch(`https://api.vk.com/method/messages.getLongPollServer?access_token=${access_token}`)
+        fetch(`https://api.vk.com/method/messages.getLongPollServer?access_token=${this.access_token}`)
             .then(data => data.json())
             .then((body)=> {
                 key = body.response.key;
@@ -47,37 +53,20 @@ vkBot.prototype.run = function _run(_ts) {
             let mas = body.updates[0];
             let textMsg, fromId;
             if (mas[0] == 4) {
+
                 textMsg = mas[6];
                 fromId = mas[3];
+
                 /////Обработка команд
                 ////////////////////////
-                if (textMsg.match(/^привет/)) {
-                    VK.request('messages.send', {
-                        'user_id': fromId,
-                        'message': helloMas[randomInteger(0, helloMas.length - 1)]
-                    }).then(
-                        function (body) {
-                        }
-                    );
+                for (var [key, func] of rulesMap) {
+                   if(textMsg.match(new RegExp(key))){
+                        func({textMsg:textMsg,fromId:fromId},VK);
+                   };
                 }
+
                 if (textMsg.match(/^время/)) {
                     VK.request('messages.send', {'user_id': fromId, 'message': moment().toString()})
-                }
-                if (textMsg.match(/^bash/)) {
-                    fetch('http://bash.im/random').then(function (res) {
-                        return res.text();
-                    }).then(function (body) {
-                        var $ = cheerio.load(body);
-                        var quotes = $('.quote > .text');
-                        var quoteText = '';
-                        quotes[0].children.forEach(function (item, i, arr) {
-                            if (item.data)
-                                quoteText += item.data;
-                            else
-                                quoteText += '\n'
-                        });
-                        VK.request('messages.send', {'user_id': fromId, 'message': quoteText})
-                    });
                 }
                 ///////////////////////
             }
