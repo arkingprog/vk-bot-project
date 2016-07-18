@@ -1,8 +1,5 @@
-//https://oauth.vk.com/authorize?client_id=5546514&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,messages,offline,photos,audio,video,docs,wall&response_type=token
 var request=require('request');
-
 var fetch = require('node-fetch');
-
 var vkRequest = function (param) {
     this.access_token = param.access_token;
     this.app_id = param.app_id;
@@ -15,7 +12,6 @@ vkRequest.prototype.request = function (method, param) {
         'User-Agent':       'Super Agent/0.0.1',
         'Content-Type':     'application/x-www-form-urlencoded'
     }
-    var q=Object.assign(param,{access_token:this.access_token});
     var options = {
         url: `https://api.vk.com/method/${method}`,
         method: 'GET',

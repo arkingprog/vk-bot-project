@@ -28,7 +28,12 @@ vkBot.prototype.addRules = function () {
     return this;
 };
 
-
+vkBot.prototype.getVKCredentials=function () {
+    return {
+        access_token:this.access_token,
+        app_id:this.app_id
+    }
+};
 vkBot.prototype.run = function _run(_ts) {
     if (!key || !ts) {
         fetch(`https://api.vk.com/method/messages.getLongPollServer?access_token=${this.access_token}`)
